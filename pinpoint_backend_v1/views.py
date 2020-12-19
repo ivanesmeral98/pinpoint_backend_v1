@@ -15,7 +15,7 @@ class UserViewSet(CsrfExemptMixin, viewsets.ModelViewSet):
     authentication_classes = []
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+  #  permission_classes = [permissions.IsAuthenticated]
 
 class GroupViewSet(CsrfExemptMixin, viewsets.ModelViewSet):
     """

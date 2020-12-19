@@ -25,7 +25,7 @@ SECRET_KEY = '=_4g6s=^tf%facg=t*av+7$_(knzz0+$_amdyjgv($#w@dhk7m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pinpoint-backend-env.eba-m3awspum.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['pinpoint-backend-env.eba-m3awspum.us-west-2.elasticbeanstalk.com', 'localhost']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

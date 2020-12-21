@@ -7,28 +7,11 @@ from pinpoint_backend_v1.serializers import UserSerializer, GroupSerializer
 from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes
 from rest_framework.response import Response
+from pinpoint_backend_v1.models import Pin
+from django.middleware import csrf
 
-'''
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    authentication_classes = []
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-class GroupViewSet(CsrfExemptMixin, viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    authentication_classes = []
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
-'''
 @api_view(['POST'])
-@authentication_classes([])
+#@authentication_classes([])
 def login_handler(request):
   if request.method == "POST":
         username = request.POST["username"]
@@ -40,7 +23,11 @@ def login_handler(request):
             return Response(content, status=status.HTTP_200_OK)
         content = {'Status': 'Login unsuccessful!'}
         return Response(content, status=status.HTTP_401_UNAUTHORIZED)      
-  
+
+@api_view(['GET'])
+def get_session_token(request):
+  return Response({'SessionToken': csrf.get_token(request)})
+
 @api_view(['POST'])
 @authentication_classes([])
 def signup_handler(request):
@@ -53,11 +40,39 @@ def signup_handler(request):
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:
       user = User.objects.create_user(username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
-      content = {'Status': 'User successfully created!'}
+      # phone_number = request.POST['phone_number']
+      # profile = Profile(user=user, phone_number=phone_number)
+      # profile.save()
+      content = {'Status': 'User profile successfully created!'}
       return Response(content, status=status.HTTP_200_OK)
   
   content = {'Status': 'User was not created!'}
   return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+#@authentication_classes([])
+def add_pin_handler(request):
+  print(str(request.user.id))
+  print(str(request.user.username))
+  if request.method == "POST":
+    if not Pin.objects.filter(address=request.POST['address']).exists():
+      address = request.POST["address"]
+      new_pin = Pin(address=address, user_id=request.user.id)
+      new_pin.save()
+      content = {'Status': 'Pin successfully created!'}
+      return Response(content, status=status.HTTP_200_OK)
+    else:
+      content = {'Status': 'Pin already exists!'}
+      return Response(content, status=status.HTTP_400_BAD_REQUEST)
+  else:
+    content = {'Status': 'Unable to create pin!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+# TODO: finish functionality getting points from a specific user
+@api_view(['GET'])
+@authentication_classes([])
+def get_pins_handler(request):
+  return
 
 '''
 @api_view(['GET'])

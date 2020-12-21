@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'pinpoint_backend_v1'
 ]
 
 MIDDLEWARE = [

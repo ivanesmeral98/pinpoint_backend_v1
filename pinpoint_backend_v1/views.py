@@ -11,7 +11,6 @@ from pinpoint_backend_v1.models import Pin
 from django.middleware import csrf
 
 @api_view(['POST'])
-#@authentication_classes([])
 def login_handler(request):
   if request.method == "POST":
         username = request.POST["username"]
@@ -50,14 +49,13 @@ def signup_handler(request):
   return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-#@authentication_classes([])
 def add_pin_handler(request):
   print(str(request.user.id))
   print(str(request.user.username))
   if request.method == "POST":
     if not Pin.objects.filter(address=request.POST['address']).exists():
       address = request.POST["address"]
-      new_pin = Pin(address=address, user_id=request.user.id)
+      new_pin = Pin(address=address, user_id=request.user.id, username=request.user.username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}
       return Response(content, status=status.HTTP_200_OK)
@@ -68,11 +66,16 @@ def add_pin_handler(request):
     content = {'Status': 'Unable to create pin!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-# TODO: finish functionality getting points from a specific user
 @api_view(['GET'])
-@authentication_classes([])
 def get_pins_handler(request):
-  return
+  if request.method == "GET":
+    addresses = list(Pin.objects.filter(user_id=request.user.id).values())
+    content = {'Pins': addresses}
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''
 @api_view(['GET'])

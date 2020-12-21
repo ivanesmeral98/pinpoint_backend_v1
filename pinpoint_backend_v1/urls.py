@@ -29,7 +29,7 @@ urlpatterns = [
     path('signup', views.signup_handler),
     path('addpin', views.add_pin_handler),
     path('getpins', views.get_pins_handler),
-    path('csrf', views.get_session_token),
+    path('session-token', views.get_session_token),
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

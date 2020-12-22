@@ -9,12 +9,15 @@ from rest_framework.decorators import authentication_classes
 from rest_framework.response import Response
 from pinpoint_backend_v1.models import Pin
 from django.middleware import csrf
+import json
 
 @api_view(['POST'])
 def login_handler(request):
   if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
+        # username = request.POST["username"]
+        # password = request.POST["password"]
+        username = request.data['username']
+        password = request.data['password']
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
@@ -22,6 +25,20 @@ def login_handler(request):
             return Response(content, status=status.HTTP_200_OK)
         content = {'Status': 'Login unsuccessful!'}
         return Response(content, status=status.HTTP_401_UNAUTHORIZED)      
+
+'''
+@api_view(['POST'])
+def login_handler_json(request):
+  if request.method == "POST":
+        # received_json_data = json.loads(request.body.decode("utf-8"))
+        # received_json_data=json.loads(request.data)
+        # received_json_data=json.dumps(request.data)
+        print(request.data['username'])
+        print(request.POST.get("username"))
+      # print(received_json_data['password'])
+        return Response('content', status=status.HTTP_200_OK)
+ '''       
+
 
 @api_view(['GET'])
 def get_session_token(request):

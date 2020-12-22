@@ -26,20 +26,6 @@ def login_handler(request):
         content = {'Status': 'Login unsuccessful!'}
         return Response(content, status=status.HTTP_401_UNAUTHORIZED)      
 
-'''
-@api_view(['POST'])
-def login_handler_json(request):
-  if request.method == "POST":
-        # received_json_data = json.loads(request.body.decode("utf-8"))
-        # received_json_data=json.loads(request.data)
-        # received_json_data=json.dumps(request.data)
-        print(request.data['username'])
-        print(request.POST.get("username"))
-      # print(received_json_data['password'])
-        return Response('content', status=status.HTTP_200_OK)
- '''       
-
-
 @api_view(['GET'])
 def get_session_token(request):
   return Response({'SessionToken': csrf.get_token(request)})
@@ -48,17 +34,14 @@ def get_session_token(request):
 @authentication_classes([])
 def signup_handler(request):
   if request.method == "POST":
-    if User.objects.filter(username=request.POST['username']).exists():
+    if User.objects.filter(username=request.data['username']).exists():
       content = {'Status': 'Username already exists!'}
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
-    elif User.objects.filter(email=request.POST['email']).exists():
+    elif User.objects.filter(email=request.data['email']).exists():
       content = {'Status': 'Email already exists!'}
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:
-      user = User.objects.create_user(username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
-      # phone_number = request.POST['phone_number']
-      # profile = Profile(user=user, phone_number=phone_number)
-      # profile.save()
+      user = User.objects.create_user(username=request.data['username'], email=request.data['email'], password=request.data['password'])
       content = {'Status': 'User profile successfully created!'}
       return Response(content, status=status.HTTP_200_OK)
   
@@ -67,11 +50,9 @@ def signup_handler(request):
 
 @api_view(['POST'])
 def add_pin_handler(request):
-  print(str(request.user.id))
-  print(str(request.user.username))
   if request.method == "POST":
-    if not Pin.objects.filter(address=request.POST['address']).exists():
-      address = request.POST["address"]
+    if not Pin.objects.filter(address=request.data['address'], user_id=request.user.id).exists():
+      address = request.data["address"]
       new_pin = Pin(address=address, user_id=request.user.id, username=request.user.username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}

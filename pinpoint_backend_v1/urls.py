@@ -30,6 +30,5 @@ urlpatterns = [
     path('addpin', views.add_pin_handler),
     path('getpins', views.get_pins_handler),
     path('session-token', views.get_session_token),
-
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

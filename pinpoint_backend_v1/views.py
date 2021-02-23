@@ -10,12 +10,24 @@ from rest_framework.response import Response
 from pinpoint_backend_v1.models import Pin
 from django.middleware import csrf
 import json
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
+
+# SENDGRID email API
+def send_email(username, email):
+    print('entered')
+    subject ='Pinpoint account successfully created'
+    from_email = 'pinpoint.app.noreply@gmail.com'
+    html_content =f'<strong>Congrats</strong> {username}! <br/><br/> Your Pinpoint account was successfully created'
+  
+    msg = EmailMessage(subject, html_content, from_email, [], [f'{email}'])
+    msg.content_subtype = "html"
+    msg.send()
+    return
 
 @api_view(['POST'])
 def login_handler(request):
   if request.method == "POST":
-        # username = request.POST["username"]
-        # password = request.POST["password"]
         username = request.data['username']
         password = request.data['password']
         user = authenticate(username=username, password=password)
@@ -42,7 +54,9 @@ def signup_handler(request):
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:
       user = User.objects.create_user(username=request.data['username'], email=request.data['email'], password=request.data['password'])
+      send_email(request.data['username'], request.data['email'])
       content = {'Status': 'User profile successfully created!'}
+
       return Response(content, status=status.HTTP_200_OK)
   
   content = {'Status': 'User was not created!'}

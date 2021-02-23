@@ -12,6 +12,34 @@ from django.middleware import csrf
 import json
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
+from django.http import HttpResponse, JsonResponse
+from django.core import serializers
+from collections import defaultdict
+from django.shortcuts import render
+
+@api_view(['GET'])
+def users_joined(request):
+  if request.method == "GET":
+    data = defaultdict(list)
+    out_dates = []
+    out_counts = []
+    users = list(User.objects.all().values())
+    for user in users:
+      data[str(user['date_joined']).split(' ')[0]].append(user)
+    for date in data:
+      out_dates.append(date)
+      out_counts.append(len(data[date]))
+      print(date)
+      print(len(data[date]))
+
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+  json_out_dates = json.dumps(out_dates)
+  json_out_counts = json.dumps(out_counts)
+  return render(request, 'test.html', {'out_dates': json_out_dates, 'out_counts': json_out_counts })
+
 
 # SENDGRID email API
 def send_email(username, email):

@@ -1,0 +1,29 @@
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<canvas id="line-chart" width="800" height="450"></canvas>
+<script>
+
+new Chart(document.getElementById("line-chart"), {
+  type: 'line',
+  data: {
+    labels: {{out_dates|safe}},
+    datasets: [{ 
+        data: {{out_counts|safe}},
+        label: "Date",
+        borderColor: "#3e95cd",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Users joined by day'
+    }
+  }
+});
+
+
+</script>
+{% endblock %}

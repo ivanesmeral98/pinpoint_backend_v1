@@ -16,7 +16,9 @@ from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from collections import defaultdict
 from django.shortcuts import render
+import requests
 
+################# DASHBOARD FUNCTIONS ########################
 @api_view(['GET'])
 def users_joined(request):
   if request.method == "GET":
@@ -39,6 +41,39 @@ def users_joined(request):
   json_out_dates = json.dumps(out_dates)
   json_out_counts = json.dumps(out_counts)
   return render(request, 'test.html', {'out_dates': json_out_dates, 'out_counts': json_out_counts })
+
+@api_view(['GET'])
+def countries_graph(request):
+  if request.method == "GET":
+    data = {}
+    out_countries = []
+    out_countries_pin_count = []
+    pins = list(Pin.objects.all().values())
+
+    # produce dictionary with country as key and # of pins as value
+    for pin in pins:
+      access_key = '619d8b82bd322448069c1bf725239054'
+      address = pin['address']
+      # doing api call and getting country pin's address is from
+      country_api_route = f'http://api.positionstack.com/v1/forward?access_key={access_key}&query={address}'
+      response = requests.get(country_api_route)
+
+      if response.json()['data'][0]['country'] in data:
+        data[response.json()['data'][0]['country']] = data.get(response.json()['data'][0]['country']) + 1
+      else:
+        data[response.json()['data'][0]['country']] = 1
+
+    for country in data:
+      out_countries.append(country)
+      out_countries_pin_count.append(data[country])
+      print(country)
+      print(data[country])
+
+    # print(response.json()['data'][0]['country'])
+    return HttpResponse()
+
+
+################# DASHBOARD FUNCTIONS ########################
 
 
 # SENDGRID email API

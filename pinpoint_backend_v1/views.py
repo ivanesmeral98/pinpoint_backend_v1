@@ -72,6 +72,51 @@ def countries_graph(request):
     # print(response.json()['data'][0]['country'])
     return HttpResponse()
 
+@api_view(['GET'])
+def daily_active_users(request):
+  if request.method == "GET":
+    data = defaultdict(set)
+    out_dau_dates = []
+    out_unique_logins = []
+    users = list(User.objects.all().values())
+    for user in users:
+      if str(user['last_login']).split(' ')[0] is not None:
+        data[str(user['last_login']).split(' ')[0]].add(user['username'])
+    for date in data:
+      out_dau_dates.append(date)
+      out_unique_logins.append(len(data[date]))
+      print(date)
+      print(len(data[date]))
+
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+  json_out_dau_dates = json.dumps(out_dau_dates)
+  json_out_unique_logins = json.dumps(out_unique_logins)
+  return HttpResponse()
+
+@api_view(['GET'])
+def login_pins_ratio(request):
+    # data = defaultdict(list)
+  if request.method == "GET":
+    user_count = 0
+    pin_count = 0
+    users = list(User.objects.all().values())
+    pins = list(Pin.objects.all().values())
+    for user in users:
+      user_count = user_count + 1
+    for pin in pins:
+      pin_count = pin_count + 1
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+  ratio = user_count / pin_count
+  print(ratio)
+  json_out_ratio = json.dumps(ratio)
+  return HttpResponse()
+  
 
 ################# DASHBOARD FUNCTIONS ########################
 

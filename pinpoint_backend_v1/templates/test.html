@@ -1,10 +1,29 @@
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<div>
+  <canvas id="users-joined" width="800" height="450"></canvas>
+</div>
 
-<canvas id="line-chart" width="800" height="450"></canvas>
+<div>
+  <canvas id="countries" width="800" height="450"></canvas>
+</div>
+
+<div>
+  <canvas id="daily-active-users" width="800" height="450"></canvas>
+</div>
+
+<div>
+  <canvas id="logins-to-pins" width="800" height="450"></canvas>
+</div>
+<div>
+  <canvas id="avg-user-session" width="800" height="450"></canvas>
+</div>
+<div>
+  <canvas id="map-views" width="800" height="450"></canvas>
+</div>
 <script>
 
-new Chart(document.getElementById("line-chart"), {
+new Chart(document.getElementById("users-joined"), {
   type: 'line',
   data: {
     labels: {{out_dates|safe}},
@@ -24,6 +43,106 @@ new Chart(document.getElementById("line-chart"), {
   }
 });
 
+var randomScalingFactor = function() {
+  return Math.round(Math.random() * 100);
+};
+
+var config = {
+  type: 'pie',
+  data: {
+    datasets: [{
+      data: [
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+      ],
+      backgroundColor: [
+        "#" + Math.floor(Math.random()*16777215).toString(16),
+        "#" + Math.floor(Math.random()*16777215).toString(16),
+        "#" + Math.floor(Math.random()*16777215).toString(16),
+        "#" + Math.floor(Math.random()*16777215).toString(16),
+        "#" + Math.floor(Math.random()*16777215).toString(16),
+      ],
+      label: 'Countries'
+    }],
+    labels: [
+      'Red',
+      'Orange',
+      'Yellow',
+      'Green',
+      'Blue'
+    ]
+  },
+  options: {
+    responsive: true
+  }
+};
+
+new Chart(document.getElementById("countries"), config);
+
+new Chart(document.getElementById("daily-active-users"), {
+  type: 'line',
+  data: {
+    labels: {{out_dates|safe}},
+    datasets: [{ 
+        data: {{out_counts|safe}},
+        label: "Date",
+        borderColor: "#3e95cd",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Daily Active Users'
+    }
+  }
+});
+
+new Chart(document.getElementById("logins-to-pins"), config);
+
+new Chart(document.getElementById("map-views"), {
+  type: 'line',
+  data: {
+    labels: {{out_dates|safe}},
+    datasets: [{ 
+        data: {{out_counts|safe}},
+        label: "Date",
+        borderColor: "#3e95cd",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Number of Map Views'
+    }
+  }
+});
+
+new Chart(document.getElementById("avg-user-session"), {
+  type: 'line',
+  data: {
+    labels: {{out_dates|safe}},
+    datasets: [{ 
+        data: {{out_counts|safe}},
+        label: "Date",
+        borderColor: "#3e95cd",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Number of Map Views'
+    }
+  }
+});
 
 </script>
 {% endblock %}

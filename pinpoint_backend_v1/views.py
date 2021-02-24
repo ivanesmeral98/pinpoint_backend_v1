@@ -16,7 +16,9 @@ from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from collections import defaultdict
 from django.shortcuts import render
+import requests
 
+################# DASHBOARD FUNCTIONS ########################
 @api_view(['GET'])
 def users_joined(request):
   if request.method == "GET":
@@ -39,6 +41,84 @@ def users_joined(request):
   json_out_dates = json.dumps(out_dates)
   json_out_counts = json.dumps(out_counts)
   return render(request, 'test.html', {'out_dates': json_out_dates, 'out_counts': json_out_counts })
+
+@api_view(['GET'])
+def countries_graph(request):
+  if request.method == "GET":
+    data = {}
+    out_countries = []
+    out_countries_pin_count = []
+    pins = list(Pin.objects.all().values())
+
+    # produce dictionary with country as key and # of pins as value
+    for pin in pins:
+      access_key = '619d8b82bd322448069c1bf725239054'
+      address = pin['address']
+      # doing api call and getting country pin's address is from
+      country_api_route = f'http://api.positionstack.com/v1/forward?access_key={access_key}&query={address}'
+      response = requests.get(country_api_route)
+
+      if response.json()['data'][0]['country'] in data:
+        data[response.json()['data'][0]['country']] = data.get(response.json()['data'][0]['country']) + 1
+      else:
+        data[response.json()['data'][0]['country']] = 1
+
+    for country in data:
+      out_countries.append(country)
+      out_countries_pin_count.append(data[country])
+      print(country)
+      print(data[country])
+
+    # print(response.json()['data'][0]['country'])
+    return HttpResponse()
+
+@api_view(['GET'])
+def daily_active_users(request):
+  if request.method == "GET":
+    data = defaultdict(set)
+    out_dau_dates = []
+    out_unique_logins = []
+    users = list(User.objects.all().values())
+    for user in users:
+      if str(user['last_login']).split(' ')[0] is not None:
+        data[str(user['last_login']).split(' ')[0]].add(user['username'])
+    for date in data:
+      out_dau_dates.append(date)
+      out_unique_logins.append(len(data[date]))
+      print(date)
+      print(len(data[date]))
+
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+  json_out_dau_dates = json.dumps(out_dau_dates)
+  json_out_unique_logins = json.dumps(out_unique_logins)
+  return HttpResponse()
+
+@api_view(['GET'])
+def login_pins_ratio(request):
+    # data = defaultdict(list)
+  if request.method == "GET":
+    user_count = 0
+    pin_count = 0
+    users = list(User.objects.all().values())
+    pins = list(Pin.objects.all().values())
+    for user in users:
+      user_count = user_count + 1
+    for pin in pins:
+      pin_count = pin_count + 1
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+  ratio = user_count / pin_count
+  print(ratio)
+  json_out_ratio = json.dumps(ratio)
+  return HttpResponse()
+  
+
+################# DASHBOARD FUNCTIONS ########################
 
 
 # SENDGRID email API

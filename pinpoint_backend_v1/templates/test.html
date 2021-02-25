@@ -21,14 +21,16 @@
 <div>
   <canvas id="map-views" width="800" height="450"></canvas>
 </div>
+
 <script>
 
+/* USERS JOINED GRAPH */
 new Chart(document.getElementById("users-joined"), {
   type: 'line',
   data: {
-    labels: {{out_dates|safe}},
+    labels: {{users_joined_dates|safe}},
     datasets: [{ 
-        data: {{out_counts|safe}},
+        data: {{users_joined_counts|safe}},
         label: "Date",
         borderColor: "#3e95cd",
         fill: false
@@ -43,21 +45,16 @@ new Chart(document.getElementById("users-joined"), {
   }
 });
 
+/* COUNTRIES/PINS GRAPH */
 var randomScalingFactor = function() {
   return Math.round(Math.random() * 100);
 };
 
-var config = {
+var countries_config = {
   type: 'pie',
   data: {
     datasets: [{
-      data: [
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-      ],
+      data: {{out_countries_pin_count|safe}},
       backgroundColor: [
         "#" + Math.floor(Math.random()*16777215).toString(16),
         "#" + Math.floor(Math.random()*16777215).toString(16),
@@ -67,28 +64,22 @@ var config = {
       ],
       label: 'Countries'
     }],
-    labels: [
-      'Red',
-      'Orange',
-      'Yellow',
-      'Green',
-      'Blue'
-    ]
+    labels: {{out_countries|safe}}
   },
   options: {
     responsive: true
   }
 };
+new Chart(document.getElementById("countries"), countries_config);
 
-new Chart(document.getElementById("countries"), config);
-
+/* DAILY ACTIVE USERS GRAPH */
 new Chart(document.getElementById("daily-active-users"), {
   type: 'line',
   data: {
-    labels: {{out_dates|safe}},
+    labels: {{out_dau_dates|safe}},
     datasets: [{ 
-        data: {{out_counts|safe}},
-        label: "Date",
+        data: {{out_unique_logins|safe}},
+        label: "Daily Active Users",
         borderColor: "#3e95cd",
         fill: false
       }
@@ -102,8 +93,26 @@ new Chart(document.getElementById("daily-active-users"), {
   }
 });
 
-new Chart(document.getElementById("logins-to-pins"), config);
+/*LOGINS TO PINS*/
+var ratio_config = {
+  type: 'pie',
+  data: {
+    datasets: [{
+      data: [Math.round({{out_ratio|safe}} * 100) / 100],
+      backgroundColor: [
+        "#" + Math.floor(Math.random()*16777215).toString(16),
+      ],
+      label: 'Countries'
+    }],
+    labels: ["Logins to Pins Ratio"]
+  },
+  options: {
+    responsive: true
+  }
+};
+new Chart(document.getElementById("logins-to-pins"), ratio_config);
 
+/*
 new Chart(document.getElementById("map-views"), {
   type: 'line',
   data: {
@@ -143,6 +152,6 @@ new Chart(document.getElementById("avg-user-session"), {
     }
   }
 });
-
+*/
 </script>
 {% endblock %}

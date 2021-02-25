@@ -9,4 +9,7 @@ class Pin(models.Model):
     user_id = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
     username = models.CharField(max_length=180)
 
-  #  user_id = models.ForeignKey(Profile, to_field='id', on_delete=models.DO_NOTHING)
+# class LastLogout(models.Model):
+#     user = models.CharField(max_length=180)
+#     last_logout = models.DateTimeField(auto_now_add=True, blank=True)
+

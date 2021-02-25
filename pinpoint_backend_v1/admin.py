@@ -4,3 +4,4 @@ from pinpoint_backend_v1.models import Pin
 # Register your models here.
 # admin.site.register(Profile)
 admin.site.register(Pin)
+# admin.site.register(LastLogout)

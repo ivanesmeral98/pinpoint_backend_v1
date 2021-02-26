@@ -15,11 +15,9 @@
 <div>
   <canvas id="logins-to-pins" width="800" height="450"></canvas>
 </div>
+
 <div>
-  <canvas id="avg-user-session" width="800" height="450"></canvas>
-</div>
-<div>
-  <canvas id="map-views" width="800" height="450"></canvas>
+  <canvas id="pins-per-day" width="800" height="450"></canvas>
 </div>
 
 <script>
@@ -92,25 +90,48 @@ new Chart(document.getElementById("daily-active-users"), {
     }
   }
 });
-
-/*LOGINS TO PINS*/
+// [Math.round({{out_ratio|safe}} * 100) / 100]
+/* Users to PINS */
 var ratio_config = {
   type: 'pie',
   data: {
     datasets: [{
-      data: [Math.round({{out_ratio|safe}} * 100) / 100],
+      data: [{{out_user_count | safe}}, {{out_pin_count | safe}}],
       backgroundColor: [
         "#" + Math.floor(Math.random()*16777215).toString(16),
       ],
-      label: 'Countries'
+      label: 'Users to Pins Ratio'
     }],
-    labels: ["Logins to Pins Ratio"]
+    labels: ["Users", "Pins"]
   },
   options: {
     responsive: true
   }
 };
 new Chart(document.getElementById("logins-to-pins"), ratio_config);
+
+/* PINS PER DAY */
+new Chart(document.getElementById("pins-per-day"), {
+  type: 'line',
+  data: {
+    labels: {{pins_dates|safe}},
+    datasets: [{ 
+        data: {{pins_counts|safe}},
+        label: "Pins",
+        borderColor: "#3e95cd",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Pins added per day'
+    }
+  }
+});
+
+
 
 /*
 new Chart(document.getElementById("map-views"), {

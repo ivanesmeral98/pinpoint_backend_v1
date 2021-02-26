@@ -30,6 +30,7 @@ def send_data(request):
     dashboard_dict['countries_graph'] = countries_graph()
     dashboard_dict['daily_active_users'] = daily_active_users()
     dashboard_dict['login_pins_ratio'] = login_pins_ratio()
+    dashboard_dict['pins_by_day'] = pins_by_day()
     
     # USERS JOINED
     users_joined_counts = dashboard_dict['users_joined']['out_counts']
@@ -50,19 +51,20 @@ def send_data(request):
     print(out_unique_logins)
 
     # Login pin ratio
-    out_ratio = dashboard_dict['login_pins_ratio']['out_ratio']
+    out_user_count = dashboard_dict['login_pins_ratio']['user_count']
+    out_pin_count = dashboard_dict['login_pins_ratio']['pin_count']
+
+    # PINS BY DAY
+    pins_counts = dashboard_dict['pins_by_day']['out_counts']
+    pins_dates = dashboard_dict['pins_by_day']['out_dates']
 
     ### JSON SERIALIZE
-
    # json_users_joined_counts = json.dumps(users_joined_counts)
    # json_users_joined_dates = json.dumps(users_joined_dates)
-
    # json_out_countries = json.dumps(out_countries)
    # json_out_countries_pin_count = json.dumps(out_countries_pin_count)
-
    # json_out_dau_dates = json.dumps(out_dau_dates)
    # json_out_unique_logins = json.dumps(out_unique_logins)
-
    # json_out_ratio = json.dumps(out_ratio)
 
   return render(request, 'test.html', 
@@ -73,8 +75,28 @@ def send_data(request):
     "out_countries_pin_count": out_countries_pin_count,
     "out_dau_dates": out_dau_dates,
     "out_unique_logins": out_unique_logins,
-    "out_ratio": out_ratio
+    "out_user_count": out_user_count,
+    "out_pin_count": out_pin_count,
+    "pins_counts": pins_counts,
+    "pins_dates": pins_dates
   })
+
+def pins_by_day():
+  data = defaultdict(list)
+  out_dates = []
+  out_counts = []
+  pins = list(Pin.objects.all().values())
+  for pin in pins:
+    data[str(pin['created_at']).split(' ')[0]].append(pin)
+  for date in data:
+    out_dates.append(date)
+    out_counts.append(len(data[date]))
+    # print(date)
+    # print(len(data[date]))
+
+  json_out_dates = json.dumps(out_dates)
+  json_out_counts = json.dumps(out_counts)
+  return {'out_dates': json_out_dates, 'out_counts': json_out_counts}
 
 def users_joined():
   data = defaultdict(list)
@@ -156,10 +178,11 @@ def login_pins_ratio():
   for pin in pins:
     pin_count = pin_count + 1
 
-  ratio = user_count / pin_count
-  # print(ratio)
-  json_out_ratio = json.dumps(ratio)
-  return {'out_ratio': json_out_ratio}
+  # ratio = user_count / pin_count
+  
+  json_out_user_count = json.dumps(user_count)
+  json_out_pin_count = json.dumps(pin_count)
+  return {'user_count': json_out_user_count, 'pin_count': json_out_pin_count}
   
 
 ################# DASHBOARD FUNCTIONS ########################

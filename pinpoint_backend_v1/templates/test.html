@@ -1,23 +1,101 @@
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-<div>
-  <canvas id="users-joined" width="800" height="450"></canvas>
+<style>
+  h1 {
+    text-align: center;
+  }
+
+  h3 {
+    text-align: center;
+  }
+
+  .user-growth {
+    border: 3px solid black;
+    margin-bottom: 20px;
+  }
+
+  .user-join-stats {
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  .user-join-child {
+    flex: 1;
+    border: 2px solid yellow;
+  }
+
+  .user-join-child:first-child {
+    margin-right: 20px;
+  }
+
+  .countries {
+    align-items: center;
+  }
+
+  #countries {
+    max-width: 500px;
+  }
+
+  .usage {
+    border: 3px solid black;
+    margin-bottom: 20px;
+  }
+
+  .user-usage {
+    display: flex;
+  }
+
+  .user-usage-child {
+    flex: 1;
+    border: 2px solid yellow;
+  }
+
+  .user-usage-child:first-child {
+    margin-right: 20px;
+  }
+
+</style>
+<h1><br>Pinpoint Analytics</br></h1>
+<div class="user-growth">
+  <div>
+    <h3>
+      User Growth Metrics
+    </h3>
+  </div>
+  <div class="user-join-stats">
+    <div class="user-join-child">
+      <canvas id="users-joined"></canvas>
+    </div>
+
+    <div class="user-join-child">
+      <canvas id="daily-active-users" ></canvas>
+    </div>
+    
+  </div>
+  <div class"countries">
+    <canvas id="countries"></canvas>
+  </div>
 </div>
 
-<div>
-  <canvas id="countries" width="800" height="450"></canvas>
-</div>
 
-<div>
-  <canvas id="daily-active-users" width="800" height="450"></canvas>
-</div>
 
-<div>
-  <canvas id="logins-to-pins" width="800" height="450"></canvas>
-</div>
+<div class="usage">
+  <div>
+    <h3>
+      <br>User Usage Metrics</br>
+    <h3>
+  </div>
+  <div class="user-usage">
+    <div class="user-usage-child">
+      <canvas id="logins-to-pins" ></canvas>
+    </div>
 
-<div>
-  <canvas id="pins-per-day" width="800" height="450"></canvas>
+    <div class="user-usage-child">
+      <canvas id="pins-per-day" ></canvas>
+    </div>
+  </div>
+  
+
 </div>
 
 <script>

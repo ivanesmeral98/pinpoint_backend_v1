@@ -24,7 +24,6 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-
     path('login', views.login_handler),
   #  path('logout', views.logout_handler),
     path('signup', views.signup_handler),
@@ -32,12 +31,7 @@ urlpatterns = [
     path('getpins', views.get_pins_handler),
     path('session-token', views.get_session_token),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('analytics', views.send_data)
-    
-    # path('users_joined', views.users_joined),
-    # path('countries_graph', views.countries_graph),
-    # path('daily_active_users', views.daily_active_users),
-    # path('login_pins_ratio', views.login_pins_ratio)
-
-    
+    path('analytics', views.send_data),
+    path('deletepin', views.delete_pin),
+    path('followfriend', views.follow_friend)     
 ]

@@ -7,7 +7,7 @@ from pinpoint_backend_v1.serializers import UserSerializer, GroupSerializer
 from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes
 from rest_framework.response import Response
-from pinpoint_backend_v1.models import Pin
+from pinpoint_backend_v1.models import Pin, Friend
 from django.middleware import csrf
 import json
 from django.core.mail import send_mail
@@ -41,8 +41,6 @@ def send_data(request):
     # COUNTRIES
     out_countries = dashboard_dict['countries_graph']['out_countries']
     out_countries_pin_count = dashboard_dict['countries_graph']['out_countries_pin_count']
-  #  print(out_countries)
-  #  print(out_countries_pin_count)
 
     # DAILY ACTIVE USERS
     out_dau_dates = dashboard_dict['daily_active_users']['out_dau_dates']
@@ -57,15 +55,6 @@ def send_data(request):
     # PINS BY DAY
     pins_counts = dashboard_dict['pins_by_day']['out_counts']
     pins_dates = dashboard_dict['pins_by_day']['out_dates']
-
-    ### JSON SERIALIZE
-   # json_users_joined_counts = json.dumps(users_joined_counts)
-   # json_users_joined_dates = json.dumps(users_joined_dates)
-   # json_out_countries = json.dumps(out_countries)
-   # json_out_countries_pin_count = json.dumps(out_countries_pin_count)
-   # json_out_dau_dates = json.dumps(out_dau_dates)
-   # json_out_unique_logins = json.dumps(out_unique_logins)
-   # json_out_ratio = json.dumps(out_ratio)
 
   return render(request, 'test.html', 
   { 
@@ -242,7 +231,11 @@ def add_pin_handler(request):
   if request.method == "POST":
     if not Pin.objects.filter(address=request.data['address'], user_id=request.user.id).exists():
       address = request.data["address"]
-      new_pin = Pin(address=address, user_id=request.user.id, username=request.user.username)
+      latitude = request.data["latitude"]
+      longitude = request.data["longitude"]
+      name = request.data["name"]
+
+      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, name=name, user_id=request.user.id, username=request.user.username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}
       return Response(content, status=status.HTTP_200_OK)
@@ -253,15 +246,54 @@ def add_pin_handler(request):
     content = {'Status': 'Unable to create pin!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
+#PINS FOR PROFILE
 @api_view(['GET'])
 def get_pins_handler(request):
   if request.method == "GET":
-    addresses = list(Pin.objects.filter(user_id=request.user.id).values())
-    content = {'Pins': addresses}
+    pins = list(Pin.objects.filter(user_id=request.user.id).values())
+    content = {'Pins': pins}
     return Response(content, status=status.HTTP_200_OK)
   else:
     content = {'Status': 'Unable to retrieve pins!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def delete_pin(request):
+  if request.method == "POST":
+    address = request.data["address"]
+    Pin.objects.filter(address=address).delete()
+  else: 
+    content = {'Status': 'Unable to delete pin!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def follow_friend(request):
+  if request.method == "POST":
+    friend = request.data["friend"]
+    if not Friend.objects.filter(username=request.user.username, friend=friend).exists():
+      new_friend = Friend(username=request.user.username, friend=friend)
+      new_friend.save()
+      content = {'Status': 'Friend successfully Followed!'}
+      return Response(content, status=status.HTTP_200_OK)
+    else:
+      content = {'Status': 'Friend already followed!'}
+      return Response(content, status=status.HTTP_400_BAD_REQUEST)
+  else:
+      content = {'Status': 'Unable to add friend'}
+      return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def feed_handler(request):
+  if request.method == 'GET':
+    friends = list(Friend.objects.filter(username=request.user.username).values('friend'))
+    pins = list(Pin.objects.filter(user_id__in=friends).values())
+    content = {'Pins': pins}
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''
 @api_view(['POST'])

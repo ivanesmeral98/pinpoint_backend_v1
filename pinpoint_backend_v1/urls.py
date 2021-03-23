@@ -33,5 +33,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('analytics', views.send_data),
     path('deletepin', views.delete_pin),
-    path('followfriend', views.follow_friend)     
+    path('followfriend', views.follow_friend),
+    path('feed', views.feed_handler)       
 ]

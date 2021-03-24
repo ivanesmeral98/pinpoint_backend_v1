@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Pin(models.Model):
-    name = models.CharField(max_length=180, default="name")
+    first_name = models.CharField(max_length=180, default="namename")
+    last_name = models.CharField(max_length=180, default="lastname")
     address = models.CharField(max_length=180)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, default=5)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, default=5)

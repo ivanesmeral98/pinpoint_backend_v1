@@ -217,8 +217,8 @@ def signup_handler(request):
       content = {'Status': 'Email already exists!'}
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:
-      user = User.objects.create_user(username=request.data['username'], email=request.data['email'], password=request.data['password'])
-      send_email(request.data['username'], request.data['email'])
+      user = User.objects.create_user(username=request.data['username'], first_name=request.data['first_name'], last_name=request.data['last_name'], email=request.data['email'], password=request.data['password'])
+      # send_email(request.data['username'], request.data['email'])
       content = {'Status': 'User profile successfully created!'}
 
       return Response(content, status=status.HTTP_200_OK)
@@ -233,9 +233,10 @@ def add_pin_handler(request):
       address = request.data["address"]
       latitude = request.data["latitude"]
       longitude = request.data["longitude"]
-      name = request.data["name"]
+      first_name = request.data["first_name"]
+      last_name = request.data["last_name"]
 
-      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, name=name, user_id=request.user.id, username=request.user.username)
+      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, first_name=first_name, last_name=last_name, user_id=request.user.id, username=request.user.username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}
       return Response(content, status=status.HTTP_200_OK)

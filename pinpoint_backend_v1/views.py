@@ -229,13 +229,14 @@ def signup_handler(request):
 @api_view(['POST'])
 def add_pin_handler(request):
   if request.method == "POST":
-    if not Pin.objects.filter(address=request.data['address'], user_id=request.user.id).exists():
+    if not Pin.objects.filter(address=request.data['address'], username=request.data['username']).exists():
+      username = request.data['username']
       address = request.data["address"]
       latitude = request.data["latitude"]
       longitude = request.data["longitude"]
       name = request.data["name"]
 
-      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, name=name, user_id=request.user.id, username=request.user.username)
+      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, name=name, username=username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}
       return Response(content, status=status.HTTP_200_OK)
@@ -247,10 +248,10 @@ def add_pin_handler(request):
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 #PINS FOR PROFILE
-@api_view(['GET'])
+@api_view(['POST'])
 def get_pins_handler(request):
-  if request.method == "GET":
-    pins = list(Pin.objects.filter(user_id=request.user.id).values())
+  if request.method == "POST":
+    pins = list(Pin.objects.filter(username=request.data['username']).values())
     content = {'Pins': pins}
     return Response(content, status=status.HTTP_200_OK)
   else:
@@ -270,8 +271,8 @@ def delete_pin(request):
 def follow_friend(request):
   if request.method == "POST":
     friend = request.data["friend"]
-    if not Friend.objects.filter(username=request.user.username, friend=friend).exists():
-      new_friend = Friend(username=request.user.username, friend=friend)
+    if not Friend.objects.filter(username=request.data['username'], friend=friend).exists():
+      new_friend = Friend(username=request.data['username'], friend=friend)
       new_friend.save()
       content = {'Status': 'Friend successfully Followed!'}
       return Response(content, status=status.HTTP_200_OK)
@@ -286,8 +287,8 @@ def follow_friend(request):
 @api_view(['GET'])
 def feed_handler(request):
   if request.method == 'GET':
-    friends = list(Friend.objects.filter(username=request.user.username).values('friend'))
-    pins = list(Pin.objects.filter(user_id__in=friends).values())
+    friends = list(Friend.objects.filter(username=request.data['username']).values('friend'))
+    pins = list(Pin.objects.filter(username_in=friends).values())
     content = {'Pins': pins}
     return Response(content, status=status.HTTP_200_OK)
   else:

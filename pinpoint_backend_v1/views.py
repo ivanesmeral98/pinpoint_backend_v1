@@ -233,10 +233,9 @@ def add_pin_handler(request):
       address = request.data["address"]
       latitude = request.data["latitude"]
       longitude = request.data["longitude"]
-      first_name = request.data["first_name"]
-      last_name = request.data["last_name"]
+      name = request.data["name"]
 
-      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, first_name=first_name, last_name=last_name, user_id=request.user.id, username=request.user.username)
+      new_pin = Pin(address=address, latitude=latitude, longitude=longitude, name=name, user_id=request.user.id, username=request.user.username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}
       return Response(content, status=status.HTTP_200_OK)

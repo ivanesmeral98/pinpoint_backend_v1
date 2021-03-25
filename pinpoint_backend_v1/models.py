@@ -8,7 +8,7 @@ class Pin(models.Model):
     longitude = models.DecimalField(max_digits=19, decimal_places=10, blank=True, default=5)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     username = models.CharField(max_length=180)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, default=5)
+   # rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, default=5)
 
 class Friend(models.Model):
     username = models.CharField(max_length=180)

@@ -237,6 +237,7 @@ def add_pin_handler(request):
       name = request.data["name"]
 
       new_pin = Pin(address=address, latitude=latitude, longitude=longitude, name=name, username=username)
+      # new_pin = Pin(address=address, name=name, username=username)
       new_pin.save()
       content = {'Status': 'Pin successfully created!'}
       return Response(content, status=status.HTTP_200_OK)

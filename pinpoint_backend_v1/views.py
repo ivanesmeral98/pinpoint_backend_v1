@@ -284,13 +284,46 @@ def follow_friend(request):
       content = {'Status': 'Unable to add friend'}
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-
+### PROFILE AND FEED ROUTES
 @api_view(['GET'])
 def feed_handler(request):
   if request.method == 'GET':
     friends = list(Friend.objects.filter(username=request.data['username']).values('friend'))
-    pins = list(Pin.objects.filter(username_in=friends).values())
+    pins = list(Pin.objects.filter(username__in=friends).values())
     content = {'Pins': pins}
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def unfollow_handler(request):
+  if request.method == 'POST':
+    Friend.objects.filter(username=request.data['username'], friend=request.data['friend']).delete()
+    content = {'Status': 'Unfollowed friend!'}
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to unfollow friend!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_groups_handler(request):
+  if request.method == 'GET':
+    group_ids = list(Group.objects.filter(username=request.data['username']).values('group_id'))
+    content = {'Groups': group_ids}
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to get group!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+## TODO: FINISH
+@api_view(['POST'])
+def get_profile(request):
+  if request.method == "POST":
+    profile = User.objects.filter(username=request.data['username'])
+    print(profile)
     return Response(content, status=status.HTTP_200_OK)
   else:
     content = {'Status': 'Unable to retrieve pins!'}

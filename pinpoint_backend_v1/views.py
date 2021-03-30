@@ -318,12 +318,34 @@ def get_groups_handler(request):
     content = {'Status': 'Unable to get group!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-## TODO: FINISH
 @api_view(['POST'])
 def get_profile(request):
   if request.method == "POST":
-    profile = User.objects.filter(username=request.data['username'])
-    print(profile)
+    # Gets through query set jazz and down to values we want
+    user = list(User.objects.filter(username=request.data['username']).values())[0]
+    first_name = user['first_name']
+    last_name = user['last_name']
+    username = user['username']
+     
+    content = { 'first_name': first_name, 'last_name': last_name, 'username': username }
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def update_profile(request):
+  if request.method == "POST":
+    user = User.objects.get(username=request.data['old_username'])
+    user.username = request.data['new_username']
+    user.first_name = request.data['first_name']
+    user.last_name = request.data['last_name']
+    user.save()
+    #user.update(username=request.data['new_username'])
+    #user.update(first_name=request.data['first_name'])
+    #user.update(last_name=request.data['last_name'])
+    
+    content = { 'Status': 'updated' }
     return Response(content, status=status.HTTP_200_OK)
   else:
     content = {'Status': 'Unable to retrieve pins!'}

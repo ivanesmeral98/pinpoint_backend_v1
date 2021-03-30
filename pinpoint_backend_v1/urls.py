@@ -25,7 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('login', views.login_handler),
-  #  path('logout', views.logout_handler),
     path('signup', views.signup_handler),
     path('addpin', views.add_pin_handler),
     path('getpins', views.get_pins_handler),
@@ -34,5 +33,9 @@ urlpatterns = [
     path('analytics', views.send_data),
     path('deletepin', views.delete_pin),
     path('followfriend', views.follow_friend),
-    path('feed', views.feed_handler)       
+    path('feed', views.feed_handler),
+    path('getprofile', views.get_profile),
+    path('updateprofile', views.update_profile),
+    path('getcollabgroups', views.get_groups_handler),
+    path('unfollowfriend', views.unfollow_handler)
 ]

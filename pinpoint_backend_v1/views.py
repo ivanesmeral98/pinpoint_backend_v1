@@ -351,6 +351,23 @@ def update_profile(request):
     content = {'Status': 'Unable to retrieve pins!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+def create_collab_group(request):
+  if request.method == "POST":
+    # datetime object containing current date and time
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    
+    usernames = request.data['usernames']
+    for username in usernames:
+      new_group_member = Group(group_id=dt_string, username=username)
+      new_group_member.save()
+      
+    content = { 'Status': 'new group created' }
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to retrieve pins!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 '''
 @api_view(['POST'])

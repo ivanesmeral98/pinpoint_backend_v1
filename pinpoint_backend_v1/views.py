@@ -308,9 +308,9 @@ def unfollow_handler(request):
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_groups_handler(request):
-  if request.method == 'GET':
+  if request.method == 'POST':
     group_ids = list(Group.objects.filter(username=request.data['username']).values('group_id'))
     content = {'Groups': group_ids}
     return Response(content, status=status.HTTP_200_OK)

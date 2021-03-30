@@ -7,7 +7,7 @@ from pinpoint_backend_v1.serializers import UserSerializer, GroupSerializer
 from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes
 from rest_framework.response import Response
-from pinpoint_backend_v1.models import Pin, Friend
+from pinpoint_backend_v1.models import Pin, Friend, CollabGroup
 from django.middleware import csrf
 import json
 from django.core.mail import send_mail
@@ -360,7 +360,7 @@ def create_collab_group(request):
     
     usernames = request.data['usernames']
     for username in usernames:
-      new_group_member = Group(group_id="0", username=username)
+      new_group_member = CollabGroup(group_id="0", username=username)
       new_group_member.save()
       
     content = { 'Status': 'new group created' }

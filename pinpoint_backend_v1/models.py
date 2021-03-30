@@ -14,6 +14,6 @@ class Friend(models.Model):
     username = models.CharField(max_length=180)
     friend = models.CharField(max_length=180)
 
-class Group(models.Model):
+class CollabGroup(models.Model):
 	username = models.CharField(max_length=180)
 	group_id = models.CharField(max_length=180)

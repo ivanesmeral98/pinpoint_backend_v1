@@ -360,7 +360,7 @@ def create_collab_group(request):
     
     usernames = request.data['usernames']
     for username in usernames:
-      new_group_member = Group(group_id=dt_string, username=username)
+      new_group_member = Group(group_id="0", username=username)
       new_group_member.save()
       
     content = { 'Status': 'new group created' }

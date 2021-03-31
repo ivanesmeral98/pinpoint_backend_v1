@@ -289,14 +289,20 @@ def follow_friend(request):
 def feed_handler(request):
   if request.method == 'POST':
     friends = list(Friend.objects.filter(username=request.data['username']).values('friend'))
-    pins = list(Pin.objects.filter(username__in=friends).values())
+    print(friends)
+    pins = []
+    for friend in friends:
+      if Pin.objects.filter(username=friend['friend']).exists():
+        pins.append(Pin.objects.filter(username=friend['friend']).values())
+    # pins = list(Pin.objects.filter(username__in=friends).values())
+    print(pins)
     content = {'Pins': pins}
     return Response(content, status=status.HTTP_200_OK)
   else:
     content = {'Status': 'Unable to retrieve pins!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-
+    
 @api_view(['POST'])
 def unfollow_handler(request):
   if request.method == 'POST':

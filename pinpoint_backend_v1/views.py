@@ -285,9 +285,9 @@ def follow_friend(request):
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 ### PROFILE AND FEED ROUTES
-@api_view(['GET'])
+@api_view(['POST'])
 def feed_handler(request):
-  if request.method == 'GET':
+  if request.method == 'POST':
     friends = list(Friend.objects.filter(username=request.data['username']).values('friend'))
     pins = list(Pin.objects.filter(username__in=friends).values())
     content = {'Pins': pins}

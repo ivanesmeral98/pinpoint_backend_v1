@@ -287,7 +287,8 @@ def get_pins_handler(request):
 def delete_pin(request):
   if request.method == "POST":
     address = request.data["address"]
-    Pin.objects.filter(address=address).delete()
+    username = request.data["username"]
+    Pin.objects.filter(address=address, username=username).delete()
     content = {'Status': "Succesfully deleted Pin!"}
     return Response(content, status=status.HTTP_200_OK)
   else: 

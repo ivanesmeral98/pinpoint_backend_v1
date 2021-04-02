@@ -38,5 +38,6 @@ urlpatterns = [
     path('updateprofile', views.update_profile),
     path('getgroups', views.get_groups_handler),
     path('unfollowfriend', views.unfollow_handler),
-    path('creategroups', views.create_collab_group)   
+    path('creategroups', views.create_collab_group),
+    path('getfriends', views.get_friends)      
 ]

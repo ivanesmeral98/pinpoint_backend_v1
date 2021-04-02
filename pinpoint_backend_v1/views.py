@@ -7,7 +7,7 @@ from pinpoint_backend_v1.serializers import UserSerializer, GroupSerializer
 from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes
 from rest_framework.response import Response
-from pinpoint_backend_v1.models import Pin, Friend, CollabGroup
+from pinpoint_backend_v1.models import Pin, Friend, CollabGroup, Profile
 from django.middleware import csrf
 import json
 from django.core.mail import send_mail
@@ -218,7 +218,12 @@ def signup_handler(request):
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:
       user = User.objects.create_user(username=request.data['username'], first_name=request.data['first_name'], last_name=request.data['last_name'], email=request.data['email'], password=request.data['password'])
-      # send_email(request.data['username'], request.data['email'])
+      bio = request.data['bio']
+      profpicurl = request.data['profpicurl']
+      tagline = request.data['tagline']
+      profile = Profile(user=user, bio=bio, tagline=tagline, profpicurl=profpicurl)
+      profile.save()
+      #  send_email(request.data['username'], request.data['email'])
       content = {'Status': 'User profile successfully created!'}
 
       return Response(content, status=status.HTTP_200_OK)
@@ -264,6 +269,8 @@ def delete_pin(request):
   if request.method == "POST":
     address = request.data["address"]
     Pin.objects.filter(address=address).delete()
+    content = {'Status': "Succesfully deleted Pin!"}
+    return Response(content, status=status.HTTP_200_OK)
   else: 
     content = {'Status': 'Unable to delete pin!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
@@ -299,7 +306,7 @@ def feed_handler(request):
     content = {'Pins': pins}
     return Response(content, status=status.HTTP_200_OK)
   else:
-    content = {'Status': 'Unable to retrieve pins!'}
+    content = {'Status': 'Unable to generate feed'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
     
@@ -327,34 +334,39 @@ def get_groups_handler(request):
 @api_view(['POST'])
 def get_profile(request):
   if request.method == "POST":
-    # Gets through query set jazz and down to values we want
-    user = list(User.objects.filter(username=request.data['username']).values())[0]
-    first_name = user['first_name']
-    last_name = user['last_name']
-    username = user['username']
+    profile = Profile.objects.get(user=User.objects.get(username=request.data['username']))
+    first_name = profile.user.first_name
+    last_name = profile.user.last_name
+    username = profile.user.username
+    bio = profile.bio
+    profpicurl = profile.profpicurl
+    tagline = profile.tagline
      
-    content = { 'first_name': first_name, 'last_name': last_name, 'username': username }
+    content = { 'first_name': first_name, 'last_name': last_name, 'username': username, 'bio': bio,
+                'profpicurl': profpicurl, 'tagline': tagline }
     return Response(content, status=status.HTTP_200_OK)
   else:
-    content = {'Status': 'Unable to retrieve pins!'}
+    content = {'Status': 'Unable to get profile!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def update_profile(request):
   if request.method == "POST":
-    user = User.objects.get(username=request.data['old_username'])
+    user=User.objects.get(username=request.data['old_username'])
+    profile = Profile.objects.get(user=user)
     user.username = request.data['new_username']
     user.first_name = request.data['first_name']
     user.last_name = request.data['last_name']
     user.save()
-    #user.update(username=request.data['new_username'])
-    #user.update(first_name=request.data['first_name'])
-    #user.update(last_name=request.data['last_name'])
-    
+    profile.bio = request.data['bio']
+    profile.profpicurl = request.data['profpicurl']
+    profile.tagline = request.data['tagline']
+    profile.save()
+
     content = { 'Status': 'updated' }
     return Response(content, status=status.HTTP_200_OK)
   else:
-    content = {'Status': 'Unable to retrieve pins!'}
+    content = {'Status': 'Unable to update profile!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -372,9 +384,19 @@ def create_collab_group(request):
     content = { 'Status': 'new group created' }
     return Response(content, status=status.HTTP_200_OK)
   else:
-    content = {'Status': 'Unable to retrieve pins!'}
+    content = {'Status': 'Unable to create group!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+def get_friends(request):
+  if request.method == "POST":
+    # datetime object containing current date and time
+    friends = list(Friend.objects.filter(username=request.data['username']).values('friend'))
+    content = { 'Friends': friends }
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to get friends!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
 '''
 @api_view(['POST'])
 @authentication_classes([])

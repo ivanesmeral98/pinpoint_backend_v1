@@ -19,6 +19,7 @@ from django.shortcuts import render
 import requests
 from datetime import datetime
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 ################# DASHBOARD FUNCTIONS ########################
 @api_view(['GET'])
@@ -418,6 +419,20 @@ def get_friends(request):
   else:
     content = {'Status': 'Unable to get friends!'}
     return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_users(request):
+  if request.method == "GET":
+    User = get_user_model()
+    users = User.objects.all().values()
+    print(users)
+    content = users
+    return Response(content, status=status.HTTP_200_OK)
+  else:
+    content = {'Status': 'Unable to get users!'}
+    return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
 '''
 @api_view(['POST'])
 @authentication_classes([])

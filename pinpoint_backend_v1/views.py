@@ -357,12 +357,13 @@ def get_profile(request):
     first_name = profile.user.first_name
     last_name = profile.user.last_name
     username = profile.user.username
+    email = profile.user.email
     bio = profile.bio
     profpicurl = profile.profpicurl
     tagline = profile.tagline
      
     content = { 'first_name': first_name, 'last_name': last_name, 'username': username, 'bio': bio,
-                'profpicurl': profpicurl, 'tagline': tagline }
+                'profpicurl': profpicurl, 'tagline': tagline, 'email': email }
     return Response(content, status=status.HTTP_200_OK)
   else:
     content = {'Status': 'Unable to get profile!'}
